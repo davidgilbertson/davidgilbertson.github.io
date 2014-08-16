@@ -149,7 +149,8 @@ window.TPYO = (function() {
       'background-image': 'repeating-linear-gradient(-40deg, #666 0, #BBB 4px, #666 8px, #666 10px)',
       'box-shadow': '0 0 20px rgba(0, 0, 0, 0.5)',
       'border-radius': '2px',
-      'backface-visibility': 'hidden'
+      'backface-visibility': 'hidden',
+      'z-index': '9999999990'
     };
     typoBoxWrapper.style.cssText = toCssString(cssText);
 
