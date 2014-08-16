@@ -1,4 +1,5 @@
 #TPYO
+Go to the [demo page](http://davidgilbertson.github.io/) to see Tpyo in action.
 Tpyo is a way for the readers of your site report typos and suggest corrections.
 
 ##Why?
