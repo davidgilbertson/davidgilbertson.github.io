@@ -22,6 +22,7 @@ window.TPYO = (function() {
     , UID = 'q8dj347' //Truly random string (typed with my eyes closed);
     , dragOffsetX
     , dragOffsetY
+    , dur = 100
     , config = {
         pos: 'fixed',
         top: 10,
@@ -29,7 +30,8 @@ window.TPYO = (function() {
         left: null,
         bottom: null,
         font: 'helvetica, arial, san-serif',
-        placeholder: 'Suggested correction (or just hit "Report a typo"!)'
+        placeholder: 'Suggested correction (or just hit "Report a typo"!)',
+        callback: null
       }
     ;
 
@@ -53,8 +55,7 @@ window.TPYO = (function() {
       } else {
         console.log('Logged. Response:', xhr.responseText);
       }
-      closeBox();
-      typoBoxMessage.value = '';
+      closeBox({clear: true});
     };
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.send(load);
@@ -81,6 +82,7 @@ window.TPYO = (function() {
   }
   
   function mouseup(e) {
+    if (!window.getSelection()) { return; }
     range = window.getSelection().getRangeAt();
     if (range.toString() === '') { return; }
     if (e.target.id.match(new RegExp(UID))) { return; } //He's one of ours!
@@ -90,7 +92,7 @@ window.TPYO = (function() {
     typoBoxText.innerHTML = selectedText;
 
     window.setTimeout(function() { //give the dom el time to create so it slides down.
-      typoBoxWrapper.style.opacity = 1;
+      showBox();
     }, 20);
   }
 
@@ -110,8 +112,19 @@ window.TPYO = (function() {
     unbindEvent(window, 'mouseup', dragEnd);
   }
 
-  function closeBox() {
+  function closeBox(obj) {
     typoBoxWrapper.style.opacity = 0;
+    window.setTimeout(function() {
+      typoBoxWrapper.style.display = 'none';
+      if (obj && obj.clear) {
+        typoBoxMessage.value = '';
+      }
+    }, dur);
+  }
+
+  function showBox() {
+    typoBoxWrapper.style.display = 'block';
+    typoBoxWrapper.style.opacity = 1;
   }
 
   function newEl(type) {
@@ -138,6 +151,7 @@ window.TPYO = (function() {
     
     typoBoxWrapper = newEl('div');
     var cssText = {
+      'transition': 'opacity ' + dur + 'ms',
       'width': '300px',
       'height': '300px',
       'bottom': '10px',
@@ -145,7 +159,6 @@ window.TPYO = (function() {
       'opacity': 0,
       'color': '#eee',
       'position': 'fixed',
-      'transition': 'opacity 100ms',
       'background-image': 'repeating-linear-gradient(-40deg, #666 0, #BBB 4px, #666 8px, #666 10px)',
       'box-shadow': '0 0 20px rgba(0, 0, 0, 0.5)',
       'border-radius': '2px',
@@ -250,6 +263,7 @@ window.TPYO = (function() {
     bindEvent(typoBoxSubmit, 'mouseout', function() {
       this.style.backgroundColor = 'rgba(150, 150, 150, 0.93)';
     });
+    bindEvent(typoBoxSubmit, 'click', closeBox);
     
     initialised = true;
   }
